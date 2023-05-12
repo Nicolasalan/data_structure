@@ -41,7 +41,7 @@ int main(void) {
                 printf("Inserir %d\n", values[i]);
                 x = insert(list, values[i], n);
                 if(x > 0)
-                        n++;
-                        print(list, n);
+                    n++;
+                    print(list, n);
      }
 }
