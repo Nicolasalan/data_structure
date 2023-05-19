@@ -1,0 +1,3 @@
+# Lista Dinâmica Duplamente Encadeada
+
+Uma lista dinâmica duplamente encadeada é uma estrutura de dados flexível que armazena elementos em nós encadeados. Cada nó possui referências para o nó anterior e o próximo, permitindo o acesso bidirecional. Isso facilita a inserção e remoção de elementos, embora exija mais espaço de memória. Essa lista é útil quando é necessário percorrer a lista em ambas as direções.
