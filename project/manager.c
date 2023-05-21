@@ -45,6 +45,7 @@ void insert(DoublyLinkedList* list, char* nome, char* departamento, char* cargo,
      if (list->head == NULL) {
           list->head = new_node;
           list->size++;
+          printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
           return;
      }
 
@@ -59,6 +60,7 @@ void insert(DoublyLinkedList* list, char* nome, char* departamento, char* cargo,
      prev->next = new_node;
      new_node->prev = prev;
      list->size++;
+     printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
 }
 
 // ========= INSERT FIRST =========
@@ -68,6 +70,7 @@ void insert_first(DoublyLinkedList* list, char* nome, char* departamento, char* 
     if (list->head == NULL) {
         list->head = new_node;
         list->size++;
+        printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
         return;
     }
 
@@ -75,12 +78,14 @@ void insert_first(DoublyLinkedList* list, char* nome, char* departamento, char* 
     list->head->prev = new_node;
     list->head = new_node;
     list->size++;
+
+    printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
 }
 
 // ========= INSERT AT =========
 void insert_at(DoublyLinkedList* list, char* nome, char* departamento, char* cargo, char* tarefas, int index) {
      if (index < 0 || index > list->size) {
-          printf("Invalid index\n");
+          printf(COLOR_YELLOW "Índice fora dos limites, colaborator nao inserido\n" COLOR_RESET);
           return;
      }
 
@@ -93,6 +98,7 @@ void insert_at(DoublyLinkedList* list, char* nome, char* departamento, char* car
 
           list->head = new_node;
           list->size++;
+          printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
           return;
      }
 
@@ -114,6 +120,7 @@ void insert_at(DoublyLinkedList* list, char* nome, char* departamento, char* car
 
      current->next = new_node;
      list->size++;
+     printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
 }
 
 // ========= INSERT LAST =========
@@ -123,6 +130,7 @@ void insert_last(DoublyLinkedList* list, char* nome, char* departamento, char* c
      if (list->head == NULL) {
           list->head = new_node;
           list->size++;
+          printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
           return;
      }
 
@@ -134,12 +142,14 @@ void insert_last(DoublyLinkedList* list, char* nome, char* departamento, char* c
      current->next = new_node;
      new_node->prev = current;
      list->size++;
+
+     printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
 }
 
 // ========= REMOVE =========
 void remove_at(DoublyLinkedList* list, int index) {
      if (index < 0 || index >= list->size) {
-          printf("Index out of bounds\n");
+          printf(COLOR_YELLOW "Índice fora dos limites\n" COLOR_RESET);
           return;
      }
 
@@ -158,9 +168,6 @@ void remove_at(DoublyLinkedList* list, int index) {
           list->size--;
           printf(COLOR_RED "Remover Colaborator: %s\n", removed_nome);
           printf("\n" COLOR_RESET);
-          //printf("Departamento: %s\n", removed_departamento);
-          //printf("Cargo: %s\n", removed_cargo);
-          //printf("Tarefas: %s\n", removed_tarefas);
           return;
      }
 
@@ -180,19 +187,14 @@ void remove_at(DoublyLinkedList* list, int index) {
      free(current);
      list->size--;
 
-     //printf("\n===================\n");
      printf(COLOR_RED "Removed collaborator: %s\n", removed_nome);
      printf("\n" COLOR_RESET);
-     //printf("Departamento: %s\n", removed_departamento);
-     //printf("Cargo: %s\n", removed_cargo);
-     //printf("Tarefas: %s\n", removed_tarefas);
-     //printf("\n===================\n");
 }
 
 // ========= REMOVE FIRST =========
 void remove_first(DoublyLinkedList* list) {
      if (list->head == NULL) {
-          printf("List is empty\n");
+          printf(COLOR_YELLOW "Lista esta Vazia\n" COLOR_RESET);
           return;
      }
 
@@ -209,19 +211,14 @@ void remove_first(DoublyLinkedList* list) {
      free(current);
      list->size--;
 
-     //printf("\n===================\n");
      printf(COLOR_RED "Remover Colaborator: %s\n", removed_nome);
      printf("\n" COLOR_RESET);
-     //printf("Departamento: %s\n", removed_departamento);
-     //printf("Cargo: %s\n", removed_cargo);
-     //printf("Tarefas: %s\n", removed_tarefas);
-     //printf("\n===================\n");
 }
 
 // ========= REMOVE LAST =========
 void remove_last(DoublyLinkedList* list) {
     if (list->head == NULL) {
-        printf("List is empty\n");
+        printf(COLOR_YELLOW "Lista esta Vazia\n" COLOR_RESET);
         return;
     }
 
@@ -248,9 +245,6 @@ void remove_last(DoublyLinkedList* list) {
 
     printf(COLOR_RED "Remover Colaborator: %s\n", removed_nome);
     printf("\n" COLOR_RESET);
-    //printf("Departamento: %s\n", removed_departamento);
-    //printf("Cargo: %s\n", removed_cargo);
-    //printf("Tarefas: %s\n", removed_tarefas);
 }
 
 // ========= PRINT FUNCTIONS =========
@@ -263,13 +257,11 @@ void print_list(DoublyLinkedList* list) {
      Node* current = list->head;
      printf(COLOR_GREEN "Lista de colaboradores: \n" COLOR_RESET);
      printf("\n");
-     //printf("List elements:\n");
      while (current != NULL) {
           printf("Nome: %s\n", current->nome);
           printf("Departamento: %s\n", current->departamento);
           printf("Cargo: %s\n", current->cargo);
           printf("Tarefas: %s\n", current->tarefas);
-          //printf("\n");
           printf("\n===================\n");
           current = current->next;
      }
@@ -306,6 +298,7 @@ int main() {
      char tarefas[100];
 
      while (1) {
+          
           printf("\nMenu:\n");
           printf("1. Inserir um colaborador no início da lista\n");
           printf("2. Inserir um colaborador no final da lista\n");
@@ -321,7 +314,7 @@ int main() {
 
           switch (choice) {
                case 0:
-                    printf("Encerrando o programa.\n");
+                    printf("\nEncerrando o programa...\n");
                     return 0;
                case 1:
                     // INSERT FIRST
@@ -334,7 +327,6 @@ int main() {
                     printf("Digite as tarefas: ");
                     scanf("%s", tarefas);
                     insert_first(&list, strdup(nome), strdup(departamento), strdup(cargo), strdup(tarefas));
-                    printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
                     break;
                case 2:
                     // INSERT LAST
@@ -347,7 +339,6 @@ int main() {
                     printf("Digite as tarefas: ");
                     scanf("%s", tarefas);
                     insert_last(&list, strdup(nome), strdup(departamento), strdup(cargo), strdup(tarefas));
-                    printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
                     break;
                case 3:
                     // INSERT AT
@@ -362,7 +353,6 @@ int main() {
                     printf("Digite a Posicao: ");
                     scanf("%d", &index);
                     insert_at(&list, strdup(nome), strdup(departamento), strdup(cargo), strdup(tarefas), index);
-                    printf(COLOR_GREEN "Colaborador adicionado com sucesso.\n" COLOR_RESET);
                     break;
                case 4:
                     // REMOVE FIRST

@@ -21,6 +21,11 @@ doubly:
 manager:
 	@docker run -it ${DOCKER_VOLUMES} data bash -c "cd project && gcc manager.c -o manager && ./manager"
 
+# === Manager Task ===
+.PHONY: task
+task:
+	@docker run -it ${DOCKER_VOLUMES} data bash -c "cd project && gcc task.c -o task && ./task"
+
 # ==================== CLEAR ====================
 
 # === Clear Insert ===
@@ -46,3 +51,9 @@ clear-doubly:
 clear-manager:
 	@echo "Clearing..."
 	@docker run -it ${DOCKER_VOLUMES} data bash -c "cd project && rm manager"
+
+# === Clear Manager Task ===
+.PHONY: clear-task
+clear-task:
+	@echo "Clearing..."
+	@docker run -it ${DOCKER_VOLUMES} data bash -c "cd project && rm task"
