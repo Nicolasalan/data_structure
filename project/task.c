@@ -98,7 +98,6 @@ void add_task_to_collaborator(DoublyLinkedList* list, char* nome_colaborador, ch
     printf("Colaborador '%s' não encontrado.\n", nome_colaborador);
 }
 
-
 // ========= SHOW ALL TASKS =========
 void show_all_tasks(DoublyLinkedList* list) {
     Node* curr = list->head;
@@ -210,49 +209,291 @@ void search_task(DoublyLinkedList* list, char* nome_tarefa) {
     }
 }
 
-
 // ========================================================================================== //
 
 // ========= INSERT =========
-void insert_collaborator(DoublyLinkedList* list, char* nome, char* departamento, char* cargo) {
-    Node* new_collaborator = init_node(nome, departamento, cargo);
+void insert_fisrt_collaborator(DoublyLinkedList* list, char* nome, char* departamento, char* cargo) {
+    Node* new_node = init_node(nome, departamento, cargo);
 
-    // Verifica se a lista está vazia
+    if (new_node == NULL) {
+        printf("Erro: Falha ao alocar memória para o novo colaborador.\n");
+        return;
+    }
+
     if (list->head == NULL) {
-        list->head = new_collaborator;
+        // Se a lista estiver vazia, o novo nó será o único nó na lista
+        list->head = new_node;
     } else {
-        Node* curr = list->head;
+        // Se a lista não estiver vazia, ajuste os ponteiros do novo nó e do nó cabeça
+        new_node->next = list->head;
+        list->head->prev = new_node;
+        list->head = new_node;
+    }
 
-        // Percorre até o final da lista
+    list->size++;
+
+    printf("Colaborador '%s' adicionado com sucesso no início da lista.\n", nome);
+}
+
+void insert_end_collaborator(DoublyLinkedList* list, char* nome, char* departamento, char* cargo) {
+    Node* new_node = init_node(nome, departamento, cargo);
+
+    if (new_node == NULL) {
+        printf("Erro: Falha ao alocar memória para o novo colaborador.\n");
+        return;
+    }
+
+    if (list->head == NULL) {
+        // Se a lista estiver vazia, o novo nó será o único nó na lista
+        list->head = new_node;
+    } else {
+        // Encontre o último nó da lista
+        Node* curr = list->head;
         while (curr->next != NULL) {
             curr = curr->next;
         }
 
-        // Insere o novo colaborador no final da lista
-        curr->next = new_collaborator;
-        new_collaborator->prev = curr;
+        // Ajuste os ponteiros do novo nó e do último nó
+        curr->next = new_node;
+        new_node->prev = curr;
     }
 
     list->size++;
-    printf("Colaborador '%s' inserido com sucesso.\n", nome);
+
+    printf("Colaborador '%s' adicionado com sucesso no final da lista.\n", nome);
 }
+
+void insert_at_collaborator(DoublyLinkedList* list, int position, char* nome, char* departamento, char* cargo) {
+    if (position < 1 || position > list->size + 1) {
+        printf("Erro: Posição inválida para inserção.\n");
+        return;
+    }
+
+    Node* new_node = init_node(nome, departamento, cargo);
+
+    if (new_node == NULL) {
+        printf("Erro: Falha ao alocar memória para o novo colaborador.\n");
+        return;
+    }
+
+    if (position == 1) {
+        // Inserir no início da lista
+        new_node->next = list->head;
+        if (list->head != NULL) {
+            list->head->prev = new_node;
+        }
+        list->head = new_node;
+    } else {
+        // Encontrar o nó na posição anterior à posição desejada
+        Node* curr = list->head;
+        int count = 1;
+        while (count < position - 1) {
+            curr = curr->next;
+            count++;
+        }
+
+        // Ajustar os ponteiros do novo nó e dos nós adjacentes
+        new_node->next = curr->next;
+        if (curr->next != NULL) {
+            curr->next->prev = new_node;
+        }
+        curr->next = new_node;
+        new_node->prev = curr;
+    }
+
+    list->size++;
+
+    printf("Colaborador '%s' adicionado com sucesso na posição %d da lista.\n", nome, position);
+}
+
+void free_task_queue(TaskQueue* queue) {
+    Task* curr = queue->front;
+    Task* next;
+
+    while (curr != NULL) {
+        next = curr->next;
+        free(curr->nome);
+        free(curr->data_registro);
+        free(curr->prazo_conclusao);
+        free(curr);
+        curr = next;
+    }
+
+    free(queue);
+}
+
+void free_node(Node* node) {
+    if (node == NULL) {
+        return;
+    }
+    
+    free(node->nome);
+    free(node->departamento);
+    free(node->cargo);
+    free_task_queue(node->task_queue);
+    free(node);
+}
+
+void remove_first_collaborator(DoublyLinkedList* list) {
+    if (list->head == NULL) {
+        printf("A lista de colaboradores está vazia.\n");
+        return;
+    }
+
+    Node* removed_node = list->head;
+    list->head = removed_node->next;
+
+    // Verifica se a lista ficou vazia após a remoção
+    if (list->head == NULL) {
+        list->size = 0;
+    } else {
+        list->head->prev = NULL;
+        list->size--;
+    }
+
+    free_node(removed_node);
+    printf("Colaborador removido com sucesso.\n");
+}
+
+void show_all_records(DoublyLinkedList* list) {
+    Node* curr = list->head;
+
+    if (curr == NULL) {
+        printf("A lista de colaboradores está vazia.\n");
+        return;
+    }
+
+    while (curr != NULL) {
+        printf("Colaborador: %s\n", curr->nome);
+        printf("Departamento: %s\n", curr->departamento);
+        printf("Cargo: %s\n", curr->cargo);
+
+        Task* task = curr->task_queue->front;
+
+        if (task == NULL) {
+            printf("Nenhuma tarefa atribuída.\n");
+        } else {
+            printf("Tarefas:\n");
+            while (task != NULL) {
+                printf("- %s\n", task->nome);
+                printf("  Data de Registro: %s\n", task->data_registro);
+                printf("  Prazo de Conclusão: %s\n", task->prazo_conclusao);
+                task = task->next;
+            }
+        }
+
+        printf("\n");
+
+        curr = curr->next;
+    }
+}
+
+void search_collaborator(DoublyLinkedList* list, char* nome_colaborador) {
+    Node* curr = list->head;
+
+    while (curr != NULL) {
+        if (strcmp(curr->nome, nome_colaborador) == 0) {
+            printf("Colaborador: %s\n", curr->nome);
+            printf("Departamento: %s\n", curr->departamento);
+            printf("Cargo: %s\n", curr->cargo);
+
+            Task* task = curr->task_queue->front;
+
+            if (task == NULL) {
+                printf("Nenhuma tarefa atribuída.\n");
+            } else {
+                printf("Tarefas:\n");
+                while (task != NULL) {
+                    printf("- %s\n", task->nome);
+                    printf("  Data de Registro: %s\n", task->data_registro);
+                    printf("  Prazo de Conclusão: %s\n", task->prazo_conclusao);
+                    task = task->next;
+                }
+            }
+
+            return;
+        }
+
+        curr = curr->next;
+    }
+
+    printf("Colaborador '%s' não encontrado.\n", nome_colaborador);
+}
+
+void remove_last_collaborator(DoublyLinkedList* list) {
+    if (list->head == NULL) {
+        printf("A lista de colaboradores está vazia. Nenhum colaborador removido.\n");
+        return;
+    }
+
+    Node* curr = list->head;
+    Node* prev = NULL;
+
+    // Percorre até o último colaborador
+    while (curr->next != NULL) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    if (prev == NULL) {
+        // Remove o único colaborador da lista
+        list->head = NULL;
+    } else {
+        // Remove o último colaborador da lista
+        prev->next = NULL;
+    }
+
+    // Libera a memória alocada para o colaborador removido
+    free(curr->nome);
+    free(curr->departamento);
+    free(curr->cargo);
+
+    // Libera a memória alocada para as tarefas do colaborador removido
+    Task* task = curr->task_queue->front;
+    while (task != NULL) {
+        Task* next_task = task->next;
+        free(task->nome);
+        free(task->data_registro);
+        free(task->prazo_conclusao);
+        free(task);
+        task = next_task;
+    }
+
+    free(curr->task_queue);
+    free(curr);
+
+    list->size--;
+    printf("Colaborador removido do final da lista.\n");
+}
+
+
 
 int main() {
     DoublyLinkedList* list = init_list();
 
-    insert_collaborator(list, "John Doe", "Departamento A", "Cargo A");
-    insert_collaborator(list, "Jane Smith", "Departamento B", "Cargo B");
-    insert_collaborator(list, "Mark Johnson", "Departamento C", "Cargo C");
+    insert_fisrt_collaborator(list, "John Doe", "Departamento A", "Cargo A");
+    insert_fisrt_collaborator(list, "Jane Smith", "Departamento B", "Cargo B");
+    insert_fisrt_collaborator(list, "Mark Johnson", "Departamento C", "Cargo C");
+    insert_end_collaborator(list, "Mary Williams", "Departamento D", "Cargo D");
+    //insert_at_collaborator(list, 6, "James Brown", "Departamento E", "Cargo E");
+
+    //remove_first_collaborator(list);
 
     add_task_to_collaborator(list, "John Doe", "Tarefa 1", "2023-05-21", "2023-05-28");
     add_task_to_collaborator(list, "Jane Smith", "Tarefa 2", "2023-05-21", "2023-05-28");
     add_task_to_collaborator(list, "Mark Johnson", "Tarefa 3", "2023-05-21", "2023-05-28");
 
+    //show_all_records(list);
+
+    search_collaborator(list, "John Doe");
+
+    remove_last_collaborator(list);
+
     //remove_task_from_collaborator(list, "Jane Smith", "Tarefa 2");
 
-    show_all_tasks(list);
+    //show_all_tasks(list);
 
-    search_task(list, "Tarefa 1");
+    //search_task(list, "Tarefa 1");
 
     return 0;
 
