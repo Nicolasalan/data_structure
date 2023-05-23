@@ -7,6 +7,7 @@
 #define COLOR_YELLOW  "\x1b[33m"
 #define COLOR_RESET   "\x1b[0m"
 
+// ========= STRUCTS =========
 typedef struct Task {
     char* nome;
     char* data_registro;
@@ -14,12 +15,14 @@ typedef struct Task {
     struct Task* next;
 } Task;
 
+// Fila de tarefas
 typedef struct TaskQueue {
     Task* front;
     Task* rear;
     int size;
 } TaskQueue;
 
+// Nó da lista duplamente encadeada
 typedef struct Node {
     struct Node* next;
     struct Node* prev;
@@ -29,11 +32,13 @@ typedef struct Node {
     TaskQueue* task_queue; 
 } Node;
 
+// Lista duplamente encadeada
 typedef struct DoublyLinkedList {
     Node* head;
     int size;
 } DoublyLinkedList;
 
+// ========= INIT LIST =========
 DoublyLinkedList* init_list() {
     DoublyLinkedList* list = malloc(sizeof(DoublyLinkedList));
     list->head = NULL;
@@ -41,6 +46,7 @@ DoublyLinkedList* init_list() {
     return list;
 }
 
+// ========= INIT QUEUE =========
 TaskQueue* init_queue() {
     TaskQueue* queue = malloc(sizeof(TaskQueue));
     queue->front = NULL;
@@ -49,6 +55,7 @@ TaskQueue* init_queue() {
     return queue;
 }
 
+// ========= INIT NODE =========
 Node* init_node(char* nome, char* departamento, char* cargo) {
     Node* new_node = malloc(sizeof(Node));
     new_node->next = NULL;
@@ -60,6 +67,7 @@ Node* init_node(char* nome, char* departamento, char* cargo) {
 }
 
 // ========= INSERT TASK =========
+// TODO: ao colocar espaco ele ja conta para o proximo no caso o registro
 void add_task_to_collaborator(DoublyLinkedList* list, char* nome_colaborador, char* nome_tarefa, char* data_registro, char* prazo_conclusao) {
     Node* curr = list->head;
 
@@ -85,17 +93,14 @@ void add_task_to_collaborator(DoublyLinkedList* list, char* nome_colaborador, ch
                 curr->task_queue->rear = new_task;
             }
 
-            printf("Tarefa adicionada ao colaborador '%s'.\n", curr->nome);
-            //printf("Tarefa: %s\n", new_task->nome);
-            //printf("Data de Registro: %s\n", new_task->data_registro);
-            //printf("Prazo de Conclusão: %s\n", new_task->prazo_conclusao);
+            printf(COLOR_GREEN "Tarefa adicionada ao colaborador\n" COLOR_RESET);
             return;
         }
 
         curr = curr->next;
     }
 
-    printf("Colaborador '%s' não encontrado.\n", nome_colaborador);
+    printf(COLOR_YELLOW "Colaborador não encontrado \n" COLOR_RESET);
 }
 
 // ========= SHOW ALL TASKS =========
@@ -103,7 +108,7 @@ void show_all_tasks(DoublyLinkedList* list) {
     Node* curr = list->head;
 
     if (curr == NULL) {
-        printf("A lista de colaboradores está vazia.\n");
+        printf(COLOR_YELLOW "A lista de colaboradores está vazia.\n" COLOR_RESET);
         return;
     }
 
@@ -113,7 +118,7 @@ void show_all_tasks(DoublyLinkedList* list) {
         Task* task = curr->task_queue->front;
 
         if (task == NULL) {
-            printf("Nenhuma tarefa atribuída.\n");
+            printf(COLOR_YELLOW "Nenhuma tarefa atribuída.\n" COLOR_RESET);
         } else {
             printf("Tarefas:\n");
             while (task != NULL) {
@@ -126,6 +131,7 @@ void show_all_tasks(DoublyLinkedList* list) {
     }
 }
 
+// ========= SHOW TASKS BY COLLABORATOR =========
 void remove_task_from_collaborator(DoublyLinkedList* list, char* nome_colaborador, char* nome_tarefa) {
     Node* curr = list->head;
 
@@ -159,7 +165,7 @@ void remove_task_from_collaborator(DoublyLinkedList* list, char* nome_colaborado
                     free(curr_task->prazo_conclusao);
                     free(curr_task);
                     
-                    printf("Tarefa removida do colaborador '%s'.\n", curr->nome);
+                    printf(COLOR_RED "Tarefa removida do colaborador '%s'.\n" COLOR_RESET, curr->nome);
                     return;
                 }
 
@@ -167,16 +173,17 @@ void remove_task_from_collaborator(DoublyLinkedList* list, char* nome_colaborado
                 curr_task = curr_task->next;
             }
 
-            printf("Tarefa '%s' não encontrada para o colaborador '%s'.\n", nome_tarefa, nome_colaborador);
+            printf(COLOR_YELLOW "Tarefa '%s' não encontrada para o colaborador '%s'.\n" COLOR_RESET, nome_tarefa, nome_colaborador);
             return;
         }
 
         curr = curr->next;
     }
 
-    printf("Colaborador '%s' não encontrado.\n", nome_colaborador);
+    printf(COLOR_YELLOW "Colaborador '%s' não encontrado.\n" COLOR_RESET, nome_colaborador);
 }
 
+// ========= SEARCH TASK =========
 void search_task(DoublyLinkedList* list, char* nome_tarefa) {
     Node* curr = list->head;
     int found = 0;
@@ -187,7 +194,7 @@ void search_task(DoublyLinkedList* list, char* nome_tarefa) {
         while (task != NULL) {
             if (strcmp(task->nome, nome_tarefa) == 0) {
                 if (!found) {
-                    printf("Tarefa encontrada:\n");
+                    printf(COLOR_GREEN "Tarefa encontrada:\n" COLOR_RESET);
                     printf("Tarefa: %s\n", task->nome);
                     printf("Colaboradores:\n");
                 }
@@ -205,18 +212,16 @@ void search_task(DoublyLinkedList* list, char* nome_tarefa) {
     }
 
     if (!found) {
-        printf("Nenhuma tarefa com o nome '%s' encontrada.\n", nome_tarefa);
+        printf(COLOR_YELLOW "Nenhuma tarefa com o nome '%s' encontrada.\n" COLOR_RESET, nome_tarefa);
     }
 }
-
-// ========================================================================================== //
 
 // ========= INSERT =========
 void insert_fisrt_collaborator(DoublyLinkedList* list, char* nome, char* departamento, char* cargo) {
     Node* new_node = init_node(nome, departamento, cargo);
 
     if (new_node == NULL) {
-        printf("Erro: Falha ao alocar memória para o novo colaborador.\n");
+        printf(COLOR_YELLOW "Erro: Falha ao alocar memória para o novo colaborador.\n" COLOR_RESET);
         return;
     }
 
@@ -232,14 +237,15 @@ void insert_fisrt_collaborator(DoublyLinkedList* list, char* nome, char* departa
 
     list->size++;
 
-    printf("Colaborador '%s' adicionado com sucesso no início da lista.\n", nome);
+    printf(COLOR_GREEN "Colaborador '%s' adicionado com sucesso no início da lista.\n" COLOR_RESET, nome);
 }
 
+// ========= INSERT END =========
 void insert_end_collaborator(DoublyLinkedList* list, char* nome, char* departamento, char* cargo) {
     Node* new_node = init_node(nome, departamento, cargo);
 
     if (new_node == NULL) {
-        printf("Erro: Falha ao alocar memória para o novo colaborador.\n");
+        printf(COLOR_YELLOW "Erro: Falha ao alocar memória para o novo colaborador.\n" COLOR_RESET);
         return;
     }
 
@@ -260,19 +266,21 @@ void insert_end_collaborator(DoublyLinkedList* list, char* nome, char* departame
 
     list->size++;
 
-    printf("Colaborador '%s' adicionado com sucesso no final da lista.\n", nome);
+    printf(COLOR_GREEN "Colaborador '%s' adicionado com sucesso no final da lista.\n" COLOR_RESET, nome);
 }
 
+// ========= INSERT AT =========
+// TODO: ao colocar em 0 ele mostra Erro: Posição inválida para inserção.
 void insert_at_collaborator(DoublyLinkedList* list, int position, char* nome, char* departamento, char* cargo) {
     if (position < 1 || position > list->size + 1) {
-        printf("Erro: Posição inválida para inserção.\n");
+        printf(COLOR_YELLOW "Erro: Posição inválida para inserção.\n" COLOR_RESET);
         return;
     }
 
     Node* new_node = init_node(nome, departamento, cargo);
 
     if (new_node == NULL) {
-        printf("Erro: Falha ao alocar memória para o novo colaborador.\n");
+        printf(COLOR_YELLOW "Erro: Falha ao alocar memória para o novo colaborador.\n" COLOR_RESET);
         return;
     }
 
@@ -303,63 +311,15 @@ void insert_at_collaborator(DoublyLinkedList* list, int position, char* nome, ch
 
     list->size++;
 
-    printf("Colaborador '%s' adicionado com sucesso na posição %d da lista.\n", nome, position);
+    printf(COLOR_GREEN "Colaborador '%s' adicionado com sucesso na posição %d da lista.\n" COLOR_RESET, nome, position);
 }
 
-void free_task_queue(TaskQueue* queue) {
-    Task* curr = queue->front;
-    Task* next;
-
-    while (curr != NULL) {
-        next = curr->next;
-        free(curr->nome);
-        free(curr->data_registro);
-        free(curr->prazo_conclusao);
-        free(curr);
-        curr = next;
-    }
-
-    free(queue);
-}
-
-void free_node(Node* node) {
-    if (node == NULL) {
-        return;
-    }
-    
-    free(node->nome);
-    free(node->departamento);
-    free(node->cargo);
-    free_task_queue(node->task_queue);
-    free(node);
-}
-
-void remove_first_collaborator(DoublyLinkedList* list) {
-    if (list->head == NULL) {
-        printf("A lista de colaboradores está vazia.\n");
-        return;
-    }
-
-    Node* removed_node = list->head;
-    list->head = removed_node->next;
-
-    // Verifica se a lista ficou vazia após a remoção
-    if (list->head == NULL) {
-        list->size = 0;
-    } else {
-        list->head->prev = NULL;
-        list->size--;
-    }
-
-    free_node(removed_node);
-    printf("Colaborador removido com sucesso.\n");
-}
-
+// ========= SHOW ALL RECORDS =========
 void show_all_records(DoublyLinkedList* list) {
     Node* curr = list->head;
 
     if (curr == NULL) {
-        printf("A lista de colaboradores está vazia.\n");
+        printf(COLOR_YELLOW "A lista de colaboradores está vazia.\n" COLOR_RESET);
         return;
     }
 
@@ -371,7 +331,7 @@ void show_all_records(DoublyLinkedList* list) {
         Task* task = curr->task_queue->front;
 
         if (task == NULL) {
-            printf("Nenhuma tarefa atribuída.\n");
+            printf(COLOR_YELLOW "Nenhuma tarefa atribuída.\n" COLOR_RESET);
         } else {
             printf("Tarefas:\n");
             while (task != NULL) {
@@ -388,6 +348,7 @@ void show_all_records(DoublyLinkedList* list) {
     }
 }
 
+// ========= SEARCH COLLABORATOR =========
 void search_collaborator(DoublyLinkedList* list, char* nome_colaborador) {
     Node* curr = list->head;
 
@@ -400,7 +361,7 @@ void search_collaborator(DoublyLinkedList* list, char* nome_colaborador) {
             Task* task = curr->task_queue->front;
 
             if (task == NULL) {
-                printf("Nenhuma tarefa atribuída.\n");
+                printf(COLOR_YELLOW "Nenhuma tarefa atribuída.\n" COLOR_RESET);
             } else {
                 printf("Tarefas:\n");
                 while (task != NULL) {
@@ -420,42 +381,74 @@ void search_collaborator(DoublyLinkedList* list, char* nome_colaborador) {
     printf("Colaborador '%s' não encontrado.\n", nome_colaborador);
 }
 
+// ========= REMOVE FIRST =========
+void remove_first_collaborator(DoublyLinkedList* list) {
+    if (list->head == NULL) {
+        printf(COLOR_YELLOW "A lista de colaboradores está vazia. Nenhum colaborador removido.\n" COLOR_RESET);
+        return;
+    }
+
+    Node* removed_node = list->head;
+    list->head = removed_node->next;
+
+    if (list->head != NULL) {
+        list->head->prev = NULL;
+    }
+
+    char * remove_nome = removed_node->nome;
+    char * remove_departamento = removed_node->departamento;
+    char * remove_cargo = removed_node->cargo;
+
+    Task* task = removed_node->task_queue->front;
+    while (task != NULL) {
+        Task* next_task = task->next;
+        char* remove_task = task->nome;
+        char* remove_registro = task->data_registro;
+        char* remove_conclusao = task->prazo_conclusao;
+
+        task = next_task;
+    }
+
+    free(removed_node->task_queue);
+    free(removed_node);
+
+    list->size--;
+    printf(COLOR_RED "Colaborador removido do início da lista.\n" COLOR_RESET);
+}
+
+// ========= REMOVE LAST =========
 void remove_last_collaborator(DoublyLinkedList* list) {
     if (list->head == NULL) {
-        printf("A lista de colaboradores está vazia. Nenhum colaborador removido.\n");
+        printf(COLOR_YELLOW "A lista de colaboradores está vazia. Nenhum colaborador removido.\n" COLOR_RESET);
         return;
     }
 
     Node* curr = list->head;
     Node* prev = NULL;
 
-    // Percorre até o último colaborador
+    // Percorre a lista até o último colaborador
     while (curr->next != NULL) {
         prev = curr;
         curr = curr->next;
     }
 
+    // Verifica se o colaborador a ser removido é o único na lista
     if (prev == NULL) {
-        // Remove o único colaborador da lista
         list->head = NULL;
     } else {
-        // Remove o último colaborador da lista
         prev->next = NULL;
     }
 
-    // Libera a memória alocada para o colaborador removido
-    free(curr->nome);
-    free(curr->departamento);
-    free(curr->cargo);
+    char * remove_nome = curr->nome;
+    char * remove_departamento = curr->departamento;
+    char * remove_cargo = curr->cargo;
 
-    // Libera a memória alocada para as tarefas do colaborador removido
     Task* task = curr->task_queue->front;
     while (task != NULL) {
         Task* next_task = task->next;
-        free(task->nome);
-        free(task->data_registro);
-        free(task->prazo_conclusao);
-        free(task);
+        char* remove_task = task->nome;
+        char* remove_registro = task->data_registro;
+        char* remove_conclusao = task->prazo_conclusao;
         task = next_task;
     }
 
@@ -463,38 +456,228 @@ void remove_last_collaborator(DoublyLinkedList* list) {
     free(curr);
 
     list->size--;
-    printf("Colaborador removido do final da lista.\n");
+    printf(COLOR_RED "Colaborador removido do final da lista.\n" COLOR_RESET);
 }
 
+// ========= REMOVE COLLABORATOR =========
+void remove_collaborator(DoublyLinkedList* list, char* nome_colaborador) {
+    if (list->head == NULL) {
+        printf(COLOR_YELLOW "A lista de colaboradores está vazia. Nenhum colaborador removido.\n" COLOR_RESET);
+        return;
+    }
 
+    Node* curr = list->head;
+    Node* prev = NULL;
+
+    // Percorre a lista procurando o colaborador a ser removido
+    while (curr != NULL) {
+        if (strcmp(curr->nome, nome_colaborador) == 0) {
+            // Colaborador encontrado
+
+            if (prev == NULL) {
+                // O colaborador a ser removido é o primeiro da lista
+                list->head = curr->next;
+            } else {
+                prev->next = curr->next;
+            }
+
+            if (curr->next != NULL) {
+                curr->next->prev = prev;
+            }
+
+            char * remove_nome = curr->nome;
+            char * remove_departamento = curr->departamento;
+            char * remove_cargo = curr->cargo;
+
+            Task* task = curr->task_queue->front;
+            while (task != NULL) {
+                Task* next_task = task->next;
+                char* remove_task = task->nome;
+                char* remove_registro = task->data_registro;
+                char* remove_conclusao = task->prazo_conclusao;
+                task = next_task;
+            }
+
+            free(curr->task_queue);
+            free(curr);
+
+            list->size--;
+            printf(COLOR_RED "Colaborador '%s' removido da lista.\n" COLOR_RESET, nome_colaborador);
+            return;
+        }
+
+        prev = curr;
+        curr = curr->next;
+    }
+
+    printf(COLOR_YELLOW "Colaborador '%s' não encontrado na lista.\n" COLOR_RESET, nome_colaborador);
+}
 
 int main() {
     DoublyLinkedList* list = init_list();
 
-    insert_fisrt_collaborator(list, "John Doe", "Departamento A", "Cargo A");
-    insert_fisrt_collaborator(list, "Jane Smith", "Departamento B", "Cargo B");
-    insert_fisrt_collaborator(list, "Mark Johnson", "Departamento C", "Cargo C");
-    insert_end_collaborator(list, "Mary Williams", "Departamento D", "Cargo D");
-    //insert_at_collaborator(list, 6, "James Brown", "Departamento E", "Cargo E");
+    int choice;
+    int colab;
+    int task;
+    int pos;
+    char nome[100];
+    char departamento[100];
+    char cargo[100];
+    char nome_tarefa[100];
+    char data_registro[100];
+    char prazo_conclusao[100];
+    
+    while (1) {
+        printf("\nMenu:\n");
+        printf("1. Funcoes de Tarefa\n");
+        printf("2. Funcoes de Colaboratores\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &choice);
 
-    //remove_first_collaborator(list);
+        switch (choice) {
+            case 0:
+                printf("\nEncerrando o programa...\n");
+                return 0;
+            case 1:
+                while (1) {
+                    // TASK
+                    printf("\n----- Menu de Tarefas -----\n");
+                    printf("1. Adicionar tarefa\n");
+                    printf("2. Remover tarefa\n");
+                    printf("3. Mostrar todas as tarefas\n");
+                    printf("4. Mostrar tarefas por colaborador\n");
+                    printf("0. Voltar ao menu principal\n");
+                    printf("Escolha uma opção: ");
+                    scanf("%d", &task);
+                    printf("\n");
+                    switch (task) {
+                        case 0:
+                            break;
+                        case 1:
+                            // INSERT FIRST
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            printf("Digite o nome da Tarefa: ");
+                            scanf("%s", nome_tarefa);
+                            printf("Digite a Data de registro: ");
+                            scanf("%s", data_registro);
+                            printf("Digite o Prazo para conclusão: ");
+                            scanf("%s", prazo_conclusao);
+                            add_task_to_collaborator(list, strdup(nome), strdup(nome_tarefa), strdup(data_registro), strdup(prazo_conclusao));
+                            break;
+                        case 2:
+                            // REMOVE FIRST
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            printf("Digite o nome da Tarefa: ");
+                            scanf("%s", nome_tarefa);
+                            remove_task_from_collaborator(list, strdup(nome), strdup(nome_tarefa));
+                            break;
+                        case 3:
+                            // SHOW ALL
+                            show_all_tasks(list);
+                            break;
+                        case 4:
+                            // SHOW BY COLLABORATOR
+                            printf("Digite o nome da Tarefa: ");
+                            scanf("%s", nome_tarefa);
+                            search_task(list, strdup(nome_tarefa));
+                            break;
+                        default:
+                            printf("Opção inválida. Tente novamente.\n");
+                            break;
+                    }
+                    if (task == 0) {
+                        break;  // Voltar ao menu principal
+                    }
+                }
+                break;
+            case 2:
+                while (1) {
+                    // COLLABORATOR
+                    printf("\n----- Menu de Colaboradores -----\n");
+                    printf("1. Inserir um colaborador no início da lista\n");
+                    printf("2. Inserir um colaborador no final da lista\n");
+                    printf("3. Inserir um colaborador em uma posição específica da lista\n");
+                    printf("4. Remover um colaborador no início da lista\n");
+                    printf("5. Remover um colaborador no final da lista\n");
+                    printf("6. Remover um colaborador em uma posição específica da lista\n");
+                    printf("7. Buscar um colaborador pelo nome e mostrar todo registro\n");
+                    printf("8. Mostrar todos os registros\n");
+                    printf("0. Voltar\n");
+                    printf("Escolha uma opção: ");
+                    scanf("%d", &colab);
+                    switch (colab) {
+                        case 0:
+                            break;
+                        case 1:
+                            // INSERT FIRST
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            printf("Digite o Departamento: ");
+                            scanf("%s", departamento);
+                            printf("Digite o Cargo: ");
+                            scanf("%s", cargo);
+                            insert_fisrt_collaborator(list, strdup(nome), strdup(departamento), strdup(cargo));
+                            break;
+                        case 2:
+                            // INSERT LAST
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            printf("Digite o Departamento: ");
+                            scanf("%s", departamento);
+                            printf("Digite o Cargo: ");
+                            scanf("%s", cargo);
+                            insert_end_collaborator(list, strdup(nome), strdup(departamento), strdup(cargo));
+                            break;
+                        case 3:
+                            // INSERT AT
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            printf("Digite o Departamento: ");
+                            scanf("%s", departamento);
+                            printf("Digite o Cargo: ");
+                            scanf("%s", cargo);
+                            printf("Digite a posição: ");
+                            scanf("%d", &pos);
+                            insert_at_collaborator(list, pos, strdup(nome), strdup(departamento), strdup(cargo));
+                            break;
+                        case 4:
+                            // REMOVE FIRST
+                            remove_first_collaborator(list);
+                            break;
+                        case 5: 
+                            // REMOVE LAST
+                            remove_last_collaborator(list);
+                            break;
+                        case 6:
+                            // REMOVE AT
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            remove_collaborator(list, strdup(nome));
+                            break;
+                        case 7:
+                            // SEARCH
+                            printf("Digite o nome do Colaborator: ");
+                            scanf("%s", nome);
+                            search_collaborator(list, strdup(nome));
+                            break;
+                        case 8:
+                            // SHOW ALL
+                            show_all_records(list);
+                            break;
+                        default:
+                            printf("Opção inválida. Tente novamente.\n");
+                            break;
 
-    add_task_to_collaborator(list, "John Doe", "Tarefa 1", "2023-05-21", "2023-05-28");
-    add_task_to_collaborator(list, "Jane Smith", "Tarefa 2", "2023-05-21", "2023-05-28");
-    add_task_to_collaborator(list, "Mark Johnson", "Tarefa 3", "2023-05-21", "2023-05-28");
-
-    //show_all_records(list);
-
-    search_collaborator(list, "John Doe");
-
-    remove_last_collaborator(list);
-
-    //remove_task_from_collaborator(list, "Jane Smith", "Tarefa 2");
-
-    //show_all_tasks(list);
-
-    //search_task(list, "Tarefa 1");
-
+                    if (colab == 0) {
+                        break; 
+                    }
+                }
+                break;
+            }
+        }
+    }
     return 0;
-
 }
