@@ -8,6 +8,9 @@
 #define COLOR_YELLOW  "\x1b[33m"
 #define COLOR_RESET   "\x1b[0m"
 
+// Nome: Nicolas Alan Grotti Meireles Aguiar RA: 11.120.562-1
+// Nome: Bruno Henrique de Almeida Borges RA: 11.120.356-8
+
 typedef struct Task {
     char* nome;
     char* data_registro;
@@ -60,7 +63,6 @@ Node* init_node(char* nome, char* departamento, char* cargo) {
     new_node->task_queue = init_queue(); 
 }
 
-// TODO: ao colocar espaco ele ja conta para o proximo no caso o registro
 void add_task_to_collaborator(DoublyLinkedList* list, char* nome_colaborador, char* nome_tarefa, char* data_registro, char* prazo_conclusao) {
 
     Node* curr = list->head;
@@ -642,7 +644,7 @@ int main() {
                             scanf("%s", departamento);
                             printf("Digite o Cargo: ");
                             scanf("%s", cargo);
-                            printf("Digite a posição: ");
+                            printf("Digite a posição (Lembrando que o inicio é 0): ");
                             scanf("%d", &pos);
                             insert_at_collaborator(list, pos, strdup(nome), strdup(departamento), strdup(cargo));
                             break;

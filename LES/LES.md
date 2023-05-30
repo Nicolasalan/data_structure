@@ -1,6 +1,12 @@
 # Lista Estática Sequencial 
 
-A lista sequencial estática é uma estrutura de dados linear que mantém uma ordem entre os seus elementos. Essa lista é estática, o que significa que os valores são armazenados em um vetor de tamanho fixo, ao contrário das listas dinâmicas que usam ponteiros para apontar para o próximo elemento da lista. Além disso, há algumas regras sobre essa lista:
+Uma lista sequencial é uma estrutura de dados em que os elementos são acessados por meio de um índice. Existem duas implementações comuns: estática e dinâmica.
+
+* Lista sequencial estática: Os elementos são armazenados em um vetor de tamanho fixo. É possível buscar, adicionar e remover elementos em qualquer posição, mas se o tamanho máximo for atingido, é necessário redimensionar a lista.
+
+* Lista sequencial dinâmica: Os elementos são armazenados em nós ligados por ponteiros. A lista pode crescer ou diminuir conforme necessário. Também é possível buscar, adicionar e remover elementos em qualquer posição.
+
+Em resumo, ambas as implementações permitem a manipulação de elementos por meio de índices, mas a lista sequencial estática possui um tamanho fixo e a lista sequencial dinâmica pode ajustar seu tamanho dinamicamente.
 
 * O elemento $a_{i}$ precede o elemento $a_{i+1}$.
 * O elemento $a_{0}$ é o primeiro elemento da lista.
